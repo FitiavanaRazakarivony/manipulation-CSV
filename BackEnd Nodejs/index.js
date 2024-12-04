@@ -12,6 +12,10 @@ app.use(cors({
   allowedHeaders: 'Content-Type', // En-têtes autorisés
 }));
 
+app.get('/', (req, res) => {
+  res.send('Hello, world!'); // Réponse simple
+});
+
 // Middleware pour gérer les données JSON et les formulaires
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
