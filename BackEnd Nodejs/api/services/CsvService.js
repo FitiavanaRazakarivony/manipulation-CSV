@@ -1,11 +1,13 @@
 const CsvProcessingWorker = require('../workers/CsvProcessingWorker');
 const { joinTables, removeDuplicates } = require('../utils/JoinUtils');
+const { cleanData, filterData } = require('../utils/JoinUtils'); // Importer cleanData
 const path = require('path');
 const fs = require('fs');
 const appConfig = require('../config/appConfig');
+const { log } = require('console');
 
 // Fonction pour traiter les fichiers
-async function processFiles(files, namefile, nameOutPut, typeJoin) {
+async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteria) {
   try {
     // Validation des données d'entrée
     if (!Array.isArray(namefile) || namefile.length !== files.length) {
@@ -25,13 +27,31 @@ async function processFiles(files, namefile, nameOutPut, typeJoin) {
       )
     );
 
-    const mergedData = results.flatMap((result) => result.data);
-    const cleanedData = removeDuplicates(mergedData);
+    // Fusionner les données des fichiers traités
+    const mergedData = results.flatMap((result) => {
+      if (result.data && result.data.length > 0) {
+        return result.data;
+      }
+      console.warn(`Aucun résultat trouvé pour le fichier: ${result.name}`);
+      return [];
+    });
 
+    // Nettoyer les données fusionnées
+    const cleanedMergedData = cleanData(mergedData);
+
+    // Supprimer les doublons des données nettoyées
+    const deduplicatedData = removeDuplicates(cleanedMergedData);
+
+    // Vérifier filterCriteria avant de l'utiliser
+    const filteredData = filterCriteria && Object.keys(filterCriteria).length
+      ? filterData(deduplicatedData, filterCriteria)
+      : deduplicatedData;
+
+    // Appliquer une jointure si plusieurs fichiers sont fournis
     const finalData =
       results.length > 1
-        ? joinTables(results.map((result) => result.data), typeJoin)
-        : cleanedData;
+        ? joinTables(results.map(() => filteredData), typeJoin)
+        : filteredData;
 
     const outputDir = path.join(__dirname, '../../', appConfig.outputDir);
 
@@ -44,19 +64,21 @@ async function processFiles(files, namefile, nameOutPut, typeJoin) {
       `${nameOutPut}-${finalData.length > 1 ? 'joined-cleaned' : 'cleaned'}.csv`
     );
 
+    // Générer le contenu CSV
     const csvHeaders = Object.keys(finalData[0] || {}).join(';');
     const csvRows = finalData
       .map((row) => Object.values(row).join(';'))
       .join('\n');
     const csvContent = `${csvHeaders}\n${csvRows}`;
 
+    // Sauvegarder le fichier CSV final
     fs.writeFileSync(finalOutputPath, csvContent, 'utf-8');
 
     return {
       message:
         results.length > 1
-          ? 'Les fichiers ont été fusionnés et nettoyés avec succès.'
-          : 'Le fichier a été traité et nettoyé avec succès.',
+          ? 'Les fichiers ont été fusionnés, nettoyés et traités avec succès.'
+          : 'Le fichier a été nettoyé et traité avec succès.',
       finalCsvPath: finalOutputPath,
       data: finalData,
     };
@@ -65,6 +87,7 @@ async function processFiles(files, namefile, nameOutPut, typeJoin) {
     throw new Error('Erreur lors du traitement des fichiers CSV');
   }
 }
+
 
 // Fonction pour supprimer un fichier
 async function deleteFile(directory, fileName) {
@@ -86,8 +109,8 @@ async function deleteFile(directory, fileName) {
   });
 }
 
-// Exporter les fonctions indépendantes
 module.exports = {
   processFiles,
   deleteFile,
 };
+

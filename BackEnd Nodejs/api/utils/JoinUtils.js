@@ -71,4 +71,51 @@ const joinTables = (tablesData, joinType) => {
   return result;
 };
 
-module.exports = { joinTables, removeDuplicates };
+// Nettoyage des données (Ex : suppression des valeurs nulles, normalisation)
+function cleanData(data) {
+  return data.map((row) => {
+    const cleanedRow = {};
+    for (const key in row) {
+      cleanedRow[key] = row[key]?.trim() || 'N/A';
+    }
+    return cleanedRow;
+  });
+}
+
+// Filtrage des données
+function filterData(data, criteria) {
+  return data.filter((row) =>
+    Object.keys(criteria).every((key) => String(row[key]).includes(criteria[key]))
+  );
+}
+
+// Trier les données
+function sortData(data, key, order = 'asc') {
+  return _.orderBy(data, [key], [order]);
+}
+
+// Extraire des colonnes spécifiques
+function extractColumns(data, columns) {
+  return data.map((row) => _.pick(row, columns));
+}
+
+// Calcul des statistiques (Ex : moyenne, somme)
+function calculateStats(data, key) {
+  const values = data.map((row) => parseFloat(row[key]) || 0);
+  const sum = _.sum(values);
+  const avg = sum / values.length;
+  return { sum, avg };
+}
+
+module.exports = {
+  cleanData,
+  filterData,
+  sortData,
+  extractColumns,
+  calculateStats,
+  joinTables,
+  removeDuplicates
+};
+
+
+

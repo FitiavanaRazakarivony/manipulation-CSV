@@ -6,16 +6,21 @@ const fs = require('fs');
 // Contrôleur pour gérer l'upload et le traitement des fichiers CSV
 class CsvController {
   async handleCsvUpload(req, res) {
-    const { namefile, nameOutPut, typeJoin } = req.body;
+    try {      
+
+    const { namefile, nameOutPut, typeJoin, filterCriteria } = req.body;
     const files = req.files;
 
-    if (!files || files.length === 0) {
-      return res.status(400).json({ message: 'Aucun fichier CSV fourni.' });
+    if (!files || !namefile || !nameOutPut || !typeJoin) {
+      return res.status(400).json({ message: 'Tous les champs requis doivent être fournis.' });
     }
 
-    try {      
-      const result = await CsvService.processFiles(files, namefile, nameOutPut, typeJoin);
+      // Vérifier si filterCriteria est fourni, sinon on le définit comme un objet vide
+      const filter = filterCriteria || {};
+    
+      const result = await CsvService.processFiles(files, namefile, nameOutPut, typeJoin, filter);
       
+      // Retourner le chemin du fichier CSV final traité
       res.status(200).json({
         message: result.message,
         finalCsvPath: result.finalCsvPath,

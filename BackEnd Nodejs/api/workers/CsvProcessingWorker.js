@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fastcsv = require('fast-csv');
 const path = require('path');
+const { cleanData } = require('../utils/JoinUtils'); // Importation de cleanData
 
 class CsvProcessingWorker {
   constructor(filePath, namefile) {
@@ -21,14 +22,14 @@ class CsvProcessingWorker {
     });
   }
 
-  process() {
+  async process() {
     return new Promise((resolve, reject) => {
       const data = [];
-      const outputDir = path.join(__dirname, '../../', 'output');  // Dossier où sauvegarder le fichier CSV généré
+      const outputDir = path.join(__dirname, '../../', 'output'); // Dossier où sauvegarder le fichier CSV généré
 
       // Créer le dossier de sortie si il n'existe pas
       if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });  // Crée le répertoire et les sous-répertoires nécessaires
+        fs.mkdirSync(outputDir, { recursive: true }); // Crée le répertoire et les sous-répertoires nécessaires
       }
 
       // Créer un flux de lecture pour analyser le CSV
@@ -46,28 +47,31 @@ class CsvProcessingWorker {
           delimiter: ';', // Délimiteur ici, ajustez à ',' selon votre format
         }))
         .on('data', (row) => {
-          data.push(row);  // Ajouter chaque ligne traitée dans 'data'
+          data.push(row); // Ajouter chaque ligne traitée dans 'data'
         })
         .on('end', () => {
-          // Supprimer les doublons des résultats
-          const cleanedData = this.removeDuplicates(data);
+          // Étape 1 : Nettoyer les données avec cleanData
+          const cleanedData = cleanData(data);
+
+          // Étape 2 : Supprimer les doublons des données nettoyées
+          const deduplicatedData = this.removeDuplicates(cleanedData);
 
           // Générer le chemin du fichier CSV nettoyé
           const finalOutputPath = path.join(outputDir, `${this.namefile}-cleaned.csv`);
           const writeStream = fs.createWriteStream(finalOutputPath);
           const csvStream = fastcsv.format({ headers: true });
 
-          // Écrire les données nettoyées dans le fichier CSV
+          // Écrire les données nettoyées et dédupliquées dans le fichier CSV
           csvStream.pipe(writeStream)
             .on('finish', () => {
               resolve({
-                data: cleanedData,
+                data: deduplicatedData,
                 csvPath: finalOutputPath,
               });
             })
             .on('error', (err) => reject(err));
 
-          cleanedData.forEach(row => csvStream.write(row));
+          deduplicatedData.forEach(row => csvStream.write(row));
           csvStream.end();
         })
         .on('error', (err) => reject(err)); // Gestion des erreurs

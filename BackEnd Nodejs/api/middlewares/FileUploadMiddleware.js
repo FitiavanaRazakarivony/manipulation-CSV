@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const { validateFileType } = require('../utils/FileUtils');
 const config = require('../config/appConfig');
+const { cleanData } = require('../utils/JoinUtils');  // Importation de cleanData
+const fastcsv = require('fast-csv');
 
 class FileUploadMiddleware {
 
@@ -27,7 +29,8 @@ class FileUploadMiddleware {
     return multer.diskStorage({
       destination: (req, file, cb) => cb(null, this.uploadDir),
       filename: (req, file, cb) => {
-        const customName = `${req.body.uploadFile || 'default'}-${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}-${file.originalname}`;        cb(null, customName);
+        const customName = `${req.body.uploadFile || 'default'}-${new Date().toLocaleDateString('fr-FR').replace(/\//g, '-')}-${file.originalname}`;
+        cb(null, customName);
       },
     });
   }
