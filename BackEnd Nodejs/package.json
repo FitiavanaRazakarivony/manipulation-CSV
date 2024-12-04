@@ -6,7 +6,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "start": "node api/index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
