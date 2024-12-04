@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { CsvUploadService } from '../services/csv/file-upload.service';
 import Swal from 'sweetalert2';
+import { CsvUploadService } from '../../services/csv/file-upload.service';
 
 @Component({
   selector: 'app-liste-csv',

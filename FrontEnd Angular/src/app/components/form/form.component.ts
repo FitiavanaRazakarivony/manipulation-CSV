@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { CsvUploadService } from '../services/csv/file-upload.service';
+import { CsvUploadService } from '../../services/csv/file-upload.service';
 import { ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2';
 
