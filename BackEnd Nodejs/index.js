@@ -12,10 +12,10 @@ app.use(cors({
   allowedHeaders: 'Content-Type', // En-têtes autorisés
 }));
 
-// Route d'accueil simple
 app.get('/', (req, res) => {
-  res.send('Hello, world!');
+  res.send('Hello, world!'); // Réponse simple
 });
+
 
 // Middleware pour gérer les données JSON et les formulaires
 app.use(express.json());
@@ -24,5 +24,12 @@ app.use(express.urlencoded({ extended: true }));
 // Route d'upload
 app.use('/api', uploadRoutes);
 
-// Exporter l'application pour Vercel
+// Démarrer le serveur
+// const PORT = process.env.PORT || 3001;
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
+
+// Export the app to be used by Vercel as a serverless function
 module.exports = app;
+
