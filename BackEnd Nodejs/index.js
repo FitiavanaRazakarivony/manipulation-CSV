@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const uploadRoutes = require('./routes/csvRoutes');
+const uploadRoutes = require('./api/routes/csvRoutes');
 const cors = require('cors');
 
 const app = express();
