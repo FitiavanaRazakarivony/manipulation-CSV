@@ -12,10 +12,10 @@ app.use(cors({
   allowedHeaders: 'Content-Type', // En-têtes autorisés
 }));
 
+// Route d'accueil simple
 app.get('/', (req, res) => {
-  res.send('Hello, world!'); // Réponse simple
+  res.send('Hello, world!');
 });
-
 
 // Middleware pour gérer les données JSON et les formulaires
 app.use(express.json());
@@ -24,10 +24,5 @@ app.use(express.urlencoded({ extended: true }));
 // Route d'upload
 app.use('/api', uploadRoutes);
 
-// Démarrer le serveur
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-
+// Exporter l'application pour Vercel
+module.exports = app;
