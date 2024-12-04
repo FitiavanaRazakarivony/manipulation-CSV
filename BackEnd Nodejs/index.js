@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const uploadRoutes = require('./routes/csvRoutes');
+const uploadRoutes = require('./api/routes/csvRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -15,6 +15,7 @@ app.use(cors({
 app.get('/', (req, res) => {
   res.send('Hello, world!'); // Réponse simple
 });
+
 
 // Middleware pour gérer les données JSON et les formulaires
 app.use(express.json());
