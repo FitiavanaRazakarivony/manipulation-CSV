@@ -12,7 +12,7 @@ app.use(cors({
   allowedHeaders: 'Content-Type', // En-têtes autorisés
 }));
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hello, world!'); // Réponse simple
 });
 
