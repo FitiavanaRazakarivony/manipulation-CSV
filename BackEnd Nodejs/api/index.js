@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', uploadRoutes);
 
 // Démarrer le serveur
-const PORT = process.env.PORT || 9002;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
