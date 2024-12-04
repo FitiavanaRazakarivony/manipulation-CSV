@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const FileUploadMiddleware = require('../middlewares/FileUploadMiddleware');
+const FileUploadMiddleware = require('../api/middlewares/FileUploadMiddleware');
 const CsvController = require('../controller/CsvController');
 
 const fileUploadMiddleware = new FileUploadMiddleware();

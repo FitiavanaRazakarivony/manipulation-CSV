@@ -1,9 +1,8 @@
 const CsvProcessingWorker = require('../workers/CsvProcessingWorker');
-const { joinTables, removeDuplicates } = require('../utils/JoinUtils');
-const { cleanData, filterData } = require('../utils/JoinUtils'); // Importer cleanData
+const { joinTables, removeDuplicates , cleanData, filterData} = require('../utils/JoinUtils');
 const path = require('path');
 const fs = require('fs');
-const appConfig = require('../../config/appConfig');
+const appConfig = require('../config/appConfig');
 const { log } = require('console');
 
 // Fonction pour traiter les fichiers
