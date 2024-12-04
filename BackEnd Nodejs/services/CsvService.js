@@ -53,7 +53,7 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
         ? joinTables(results.map(() => filteredData), typeJoin)
         : filteredData;
 
-    const outputDir = path.join(__dirname, '../../', appConfig.outputDir);
+    const outputDir = path.join(__dirname, '../', appConfig.outputDir);
 
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });

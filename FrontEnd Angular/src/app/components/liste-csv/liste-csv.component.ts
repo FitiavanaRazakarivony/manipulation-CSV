@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CsvUploadService } from '../../services/csv/file-upload.service';
+import { CsvUploadService } from '../services/csv/file-upload.service';
 import Swal from 'sweetalert2';
 
 @Component({

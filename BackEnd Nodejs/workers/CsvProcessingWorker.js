@@ -25,7 +25,7 @@ class CsvProcessingWorker {
   async process() {
     return new Promise((resolve, reject) => {
       const data = [];
-      const outputDir = path.join(__dirname, '../../', 'output'); // Dossier où sauvegarder le fichier CSV généré
+      const outputDir = path.join(__dirname, '../', 'output'); // Dossier où sauvegarder le fichier CSV généré
 
       // Créer le dossier de sortie si il n'existe pas
       if (!fs.existsSync(outputDir)) {

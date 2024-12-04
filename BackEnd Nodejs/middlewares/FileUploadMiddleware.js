@@ -9,7 +9,7 @@ const fastcsv = require('fast-csv');
 class FileUploadMiddleware {
 
   constructor(uploadDir = config.uploadDir) {
-    this.uploadDir = path.join(__dirname, '../../', uploadDir);  // Dossier où les fichiers seront stockés
+    this.uploadDir = path.join(__dirname, '../', uploadDir);  // Dossier où les fichiers seront stockés
 
     this.ensureUploadDirExists();
 
