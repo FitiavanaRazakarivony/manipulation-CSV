@@ -7,7 +7,7 @@ const app = express();
 
 // Configuration de CORS
 app.use(cors({
-  origin: '*', // Autorise uniquement les requêtes venant de ce domaine
+  origin: 'https://frontendmanipulation-cilcnwtox-fitiavanarazakarivonys-projects.vercel.app/', // Autorise uniquement les requêtes venant de ce domaine
   methods: 'GET,POST,PUT,DELETE', // Méthodes autorisées
   allowedHeaders: 'Content-Type', // En-têtes autorisés
 }));
