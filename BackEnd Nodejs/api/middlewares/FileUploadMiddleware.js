@@ -1,9 +1,9 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { validateFileType } = require('../../utils/FileUtils');
+const { validateFileType } = require('../utils/FileUtils');
 const config = require('../../config/appConfig');
-const { cleanData } = require('../../utils/JoinUtils');  // Importation de cleanData
+const { cleanData } = require('../utils/JoinUtils');  // Importation de cleanData
 const fastcsv = require('fast-csv');
 
 class FileUploadMiddleware {

@@ -1,8 +1,8 @@
-const CsvProcessingWorker = require('../workers/CsvProcessingWorker');
+const CsvProcessingWorker = require('../../api/workers/CsvProcessingWorker');
 const { joinTables, removeDuplicates , cleanData, filterData} = require('../utils/JoinUtils');
 const path = require('path');
 const fs = require('fs');
-const appConfig = require('../config/appConfig');
+const appConfig = require('../../config/appConfig');
 const { log } = require('console');
 
 // Fonction pour traiter les fichiers
@@ -112,4 +112,3 @@ module.exports = {
   processFiles,
   deleteFile,
 };
-
