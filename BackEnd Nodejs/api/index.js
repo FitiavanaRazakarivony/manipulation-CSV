@@ -7,7 +7,8 @@ const app = express();
 
 // Configuration de CORS
 app.use(cors({
-  origin: 'https://front-end-angularmanipulationcsv.vercel.app/', // Autorise uniquement les requêtes venant de ce domaine
+  // origin: 'https://front-end-angularmanipulationcsv.vercel.app', // Autorise uniquement les requêtes venant de ce domaine
+  origin: '*', 
   methods: 'GET,POST,PUT,DELETE', // Méthodes autorisées
   allowedHeaders: 'Content-Type', // En-têtes autorisés
 }));
