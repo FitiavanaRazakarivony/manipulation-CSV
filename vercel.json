@@ -1,0 +1,19 @@
+{
+    "projects": [
+      {
+        "name": "frontend",
+        "root": "./frontend"
+      },
+      {
+        "name": "backend",
+        "root": "./backend"
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/api/(.*)",
+        "destination": "/backend/api/$1"
+      }
+    ]
+  }
+  

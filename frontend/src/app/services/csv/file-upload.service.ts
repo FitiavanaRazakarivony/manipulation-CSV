@@ -7,8 +7,6 @@ import { environment } from '../../../environments/environment.prod';
   providedIn: 'root'
 })
 export class CsvUploadService {
-
-
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
