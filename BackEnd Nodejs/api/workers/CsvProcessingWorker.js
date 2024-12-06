@@ -15,7 +15,7 @@ class CsvProcessingWorker {
     return data.filter(item => {
       const serializedItem = JSON.stringify(item); // Sérialiser pour comparaison
       if (seen.has(serializedItem)) {
-        return false; // Ignorer les doublons
+        return false; // Ignorer les doublons 
       }
       seen.add(serializedItem);
       return true;
