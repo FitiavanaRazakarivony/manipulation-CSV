@@ -25,7 +25,7 @@ class CsvProcessingWorker {
   async process() {
     return new Promise((resolve, reject) => {
       const data = [];
-      const outputDir = path.join(__dirname, '../', 'output'); // Dossier où sauvegarder le fichier CSV généré
+      const outputDir = path.join(__dirname, '../../', 'output'); // Dossier où sauvegarder le fichier CSV généré
 
       // Créer le dossier de sortie si il n'existe pas
       if (!fs.existsSync(outputDir)) {
@@ -44,7 +44,7 @@ class CsvProcessingWorker {
         .pipe(fastcsv.parse({
           headers: true,
           skipEmpty: true,
-          delimiter: ';', // Délimiteur ici, ajustez à ',' selon votre format
+          delimiter: ';', // Délimiteur ici, ajustez à ';' selon votre format
         }))
         .on('data', (row) => {
           data.push(row); // Ajouter chaque ligne traitée dans 'data'

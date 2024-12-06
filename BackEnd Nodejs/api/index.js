@@ -7,14 +7,13 @@ const app = express();
 
 // Configuration de CORS
 app.use(cors({
-  // origin: 'https://front-end-angularmanipulationcsv.vercel.app', // Autorise uniquement les requêtes venant de ce domaine
   origin: '*', 
-  methods: 'GET,POST,PUT,DELETE', // Méthodes autorisées
-  allowedHeaders: 'Content-Type', // En-têtes autorisés
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type',
 }));
 
 app.get('/api', (req, res) => {
-  res.send('Hello, world!'); // Réponse simple
+  res.send('Hello, world!');
 });
 
 // Middleware pour gérer les données JSON et les formulaires
@@ -29,5 +28,3 @@ const PORT = process.env.PORT || 9002;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
