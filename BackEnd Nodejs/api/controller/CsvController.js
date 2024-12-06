@@ -38,8 +38,8 @@ class CsvController {
     const { type } = req.query; // Récupère le type de dossier ("upload" ou "output")
   
     // Définir les chemins pour les deux dossiers
-    const uploadDir = path.join(__dirname, '../', 'uploads');
-    const outputDir = path.join(__dirname, '../', 'output');
+    const uploadDir = path.join(__dirname, '../../', 'uploads');
+    const outputDir = path.join(__dirname, '../../', 'output');
   
     try {
       // Fonction pour lister les fichiers d'un dossier
@@ -105,8 +105,8 @@ class CsvController {
     const { type, fileName } = req.params;  // Récupère le type de dossier (upload/output) et le nom du fichier depuis les paramètres
 
     // Définir les chemins pour les deux dossiers
-    const uploadDir = path.join(__dirname, '../', 'uploads');
-    const outputDir = path.join(__dirname, '../', 'output');
+    const uploadDir = path.join(__dirname, '../../', 'uploads');
+    const outputDir = path.join(__dirname, '../../', 'output');
 
     // Déterminer le dossier à partir du type
     let directory;
@@ -140,8 +140,8 @@ class CsvController {
     const { type, fileName } = req.params;
 
     // Définir les chemins pour les deux dossiers
-    const uploadDir = path.join(__dirname, '../', 'uploads');
-    const outputDir = path.join(__dirname, '../', 'output');
+    const uploadDir = path.join(__dirname, '../../', 'uploads');
+    const outputDir = path.join(__dirname, '../../', 'output');
 
     // Déterminer le dossier à partir du type
     let directory;
