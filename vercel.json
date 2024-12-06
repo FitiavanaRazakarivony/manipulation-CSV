@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/api/index.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
     },
     {
@@ -13,11 +13,17 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/api/index.js"
+      "dest": "api/index.js"
     },
     {
       "src": "/(.*)",
       "dest": "frontend/dist/manipulation-csv/$1"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
