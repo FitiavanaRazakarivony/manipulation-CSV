@@ -17,7 +17,6 @@ class CsvController {
 
       // Vérifier si filterCriteria est fourni, sinon on le définit comme un objet vide
       const filter = filterCriteria || {};
-    
       const result = await CsvService.processFiles(files, namefile, nameOutPut, typeJoin, filter);
       
       // Retourner le chemin du fichier CSV final traité
