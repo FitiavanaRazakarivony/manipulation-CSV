@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import Swal from 'sweetalert2';
 import { CsvUploadService } from '../../services/csv/file-upload.service';
-
 @Component({
   selector: 'app-liste-csv',
   templateUrl: './liste-csv.component.html',
@@ -49,20 +48,26 @@ export class ListeCSVComponent {
     });
   }
 
-  downloadFile(type: string, fileName: string): void {
-    const fileUrl = `http://localhost:3000/api/download/${type}/${fileName}`; // URL pour le téléchargement
-    window.open(fileUrl, '_blank'); // Ouvre le fichier dans un nouvel onglet
+  // downloadFile(type: string, fileName: string): void {
 
-    // Alerte SweetAlert pour un téléchargement réussi
-    Swal.fire({
-      position: 'top-end',
-      icon: 'success',
-      title: 'Téléchargement lancé!',
-      text: `Le fichier ${fileName} est en cours de téléchargement.`,
-      showConfirmButton: false,
-      timer: 1500,
-      timerProgressBar: true,
-    });
+  //   const fileUrl = `https://api-manipulation-csv.vercel.app/api/download/${type}/${fileName}`; // URL pour le téléchargement
+  //   window.open(fileUrl, '_blank'); // Ouvre le fichier dans un nouvel onglet
+
+  //   // Alerte SweetAlert pour un téléchargement réussi
+  //   Swal.fire({
+  //     position: 'top-end',
+  //     icon: 'success',
+  //     title: 'Téléchargement lancé!',
+  //     text: `Le fichier ${fileName} est en cours de téléchargement.`,
+  //     showConfirmButton: false,
+  //     timer: 1500,
+  //     timerProgressBar: true,
+  //   });
+  // }
+
+
+  downloadFile(type: string, fileName: string): void {
+    this.fileService.onDownload(type, fileName);
   }
 
   deleteFile(fileName: string): void {
