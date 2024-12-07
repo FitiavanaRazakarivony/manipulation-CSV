@@ -137,11 +137,11 @@ class CsvController {
   // Nouvelle méthode pour supprimer un fichier
   async deleteFile(req, res) {
     const { type, fileName } = req.params;
-
+  
     // Définir les chemins pour les deux dossiers
     const uploadDir = path.join(__dirname, '../../', 'uploads');
     const outputDir = path.join(__dirname, '../../', 'output');
-
+  
     // Déterminer le dossier à partir du type
     let directory;
     if (type === 'upload') {
@@ -151,15 +151,22 @@ class CsvController {
     } else {
       return res.status(400).json({ message: 'Type de dossier invalide. Utilisez "upload" ou "output".' });
     }
-
+  
+    const filePath = path.join(directory, fileName);
+  
     try {
+      // Vérifier si le fichier existe
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: 'Fichier non trouvé.' });
+      }
+  
       // Utiliser le service pour supprimer le fichier
       const message = await CsvService.deleteFile(directory, fileName);
-
+  
       res.status(200).json({ message });
     } catch (error) {
       console.error('Erreur lors de la suppression du fichier:', error);
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: 'Erreur interne du serveur.', error: error.message });
     }
   }
   async url(req, res){
