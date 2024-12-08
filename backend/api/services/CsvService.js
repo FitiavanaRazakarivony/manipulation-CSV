@@ -8,8 +8,16 @@ const { log } = require('console');
 // Fonction pour traiter les fichiers
 async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteria) {
   try {
+    // Si `files` et `namefile` ne sont pas des tableaux, les convertir en tableaux
+    if (!Array.isArray(files)) {
+      files = [files];
+    }
+    if (!Array.isArray(namefile)) {
+      namefile = [namefile];
+    }
+
     // Validation des données d'entrée
-    if (!Array.isArray(namefile) || namefile.length !== files.length) {
+    if (namefile.length !== files.length) {
       throw new Error(
         'Le nombre de fichiers ne correspond pas au nombre de noms fournis.'
       );
@@ -88,6 +96,7 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
 }
 
 
+
 // Fonction pour supprimer un fichier
 async function deleteFile(directory, fileName) {
   const filePath = path.join(directory, fileName);
@@ -112,3 +121,4 @@ module.exports = {
   processFiles,
   deleteFile,
 };
+

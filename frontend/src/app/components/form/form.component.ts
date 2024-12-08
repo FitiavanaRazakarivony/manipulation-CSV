@@ -30,7 +30,8 @@ export class FormComponent {
           Validators.pattern(/^(?!.*\d)(?!.*<\?php)(?!.*@)(?!.*%)[a-zA-ZÀ-ÿ]+([ '-][a-zA-ZÀ-ÿ]+)*$/),
         ],
       ],
-      typeJoin: [''],
+      typeJoin: [''], // Facultatif si un seul fichier
+      filterCriteria: [''], // Champ initialisé avec une valeur vide par défaut
       address: this._fb.array([this.addAddressGroup()]),
     });
   }
@@ -66,6 +67,7 @@ export class FormComponent {
     this.addressArray.removeAt(index);
 
     if (this.addressArray.length <= 1) {
+      // Réinitialiser typeJoin s'il n'est plus nécessaire
       this.userForm.get('typeJoin')?.reset('');
       this.cdr.detectChanges(); // Force la détection des changements
     }
@@ -82,28 +84,24 @@ export class FormComponent {
     }
   }
 
-  // Méthode pour récupérer toutes les valeurs de namefile
-  getAllNameFileValues(): string[] {
-    return this.addressArray.controls.map(control => control.get('namefile')?.value);
-  }
-
-  getAllFileValues(): File[] {
-    return this.addressArray.controls.map(control => control.get('file')?.value);
-  }
-
-  // Méthode pour récupérer une seule valeur de namefile par index
-  getNameFileValue(index: number): string | null {
-    const control = this.addressArray.at(index).get('namefile');
-    return control ? control.value : null;
-  }
-
   // Soumettre le formulaire
   uploadFile(): void {
     const formData = new FormData();
 
     // Ajout des champs du formulaire
     formData.append('nameOutPut', this.userForm.get('nameOutPut')?.value);
-    formData.append('typeJoin', this.userForm.get('typeJoin')?.value);
+    const typeJoin = this.userForm.get('typeJoin')?.value;
+
+    if (typeJoin) {
+      formData.append('typeJoin', typeJoin);
+    }
+
+    const filterCriteria = this.userForm.get('filterCriteria')?.value;
+    console.log('filterCriteria :', filterCriteria);
+
+    if (filterCriteria) {
+      formData.append('filterCriteria', filterCriteria);
+    }
 
     // Ajout des fichiers et noms associés
     this.addressArray.controls.forEach((control, index) => {
@@ -116,7 +114,7 @@ export class FormComponent {
       }
     });
 
-    console.log('formData', formData);
+    console.log(formData);
 
     // Envoi des données
     this.csvUploadService.uploadCsv(formData).subscribe(
@@ -145,7 +143,4 @@ export class FormComponent {
       }
     );
   }
-
 }
-
-

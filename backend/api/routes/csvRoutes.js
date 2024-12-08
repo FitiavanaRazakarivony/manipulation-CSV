@@ -15,7 +15,6 @@ router.get('/url', CsvController.url);
 // Route pour télécharger un fichier
 router.get('/download/:type/:fileName', CsvController.downloadFile);
 
-
 // Nouvelle route pour supprimer un fichier
 router.delete('/delete/:type/:fileName', CsvController.deleteFile);
 

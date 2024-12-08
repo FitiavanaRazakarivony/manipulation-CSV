@@ -5,32 +5,60 @@ const fs = require('fs');
 
 // Contrôleur pour gérer l'upload et le traitement des fichiers CSV
 class CsvController {
+
   async handleCsvUpload(req, res) {
-    try {      
-
-    const { namefile, nameOutPut, typeJoin, filterCriteria } = req.body;
-    const files = req.files;
-
-    if (!files || !namefile || !nameOutPut || !typeJoin) {
-      return res.status(400).json({ message: 'Tous les champs requis doivent être fournis.' });
-    }
-
-      // Vérifier si filterCriteria est fourni, sinon on le définit comme un objet vide
-      const filter = filterCriteria || {};
+    try {
+      const { namefile, nameOutPut, typeJoin, filterCriteria } = req.body;
+    const files = Array.isArray(req.files) ? req.files : [req.files];  // Gestion des fichiers envoyés en tant qu'objet ou tableau  
+  
+      // Validation : vérifier les fichiers et les champs requis
+      if (!files || files.length === 0) {
+        return res.status(400).json({ message: 'Aucun fichier uploadé.' });
+      }
+  
+      // Condition : si un seul fichier est uploadé, on ne valide pas typeJoin et filterCriteria
+      if (files.length === 1) {
+        // Si un seul fichier, ces champs ne sont pas nécessaires
+        if (!nameOutPut || !namefile) {
+          return res.status(400).json({ 
+            message: 'Les champs nameOutPut et namefile sont obligatoires pour un fichier unique.',
+            received: { nameOutPut, namefile }
+          });
+        }
+      } else {
+        // Si plusieurs fichiers, ces champs sont obligatoires et filterCriteria doit être non vide
+        if (!nameOutPut || !typeJoin ) {
+          return res.status(400).json({ 
+            message: 'Les champs nameOutPut, typeJoin et filterCriteria sont obligatoires pour plusieurs fichiers.',
+            received: { nameOutPut, typeJoin },
+          });
+        }
+      }
+  
+      // Logs pour débogage
+      console.log('Fichiers reçus:', files);
+      console.log('Champs reçus:', { namefile, nameOutPut, typeJoin, filterCriteria });
+  
+      // Définir un critère de filtrage par défaut si absent
+      const filter = filterCriteria && filterCriteria.trim() !== '' ? JSON.parse(filterCriteria) : {};
+  
+      // Appeler le service CSV
       const result = await CsvService.processFiles(files, namefile, nameOutPut, typeJoin, filter);
-      
-      // Retourner le chemin du fichier CSV final traité
+  
+      // Retourner le chemin du fichier CSV final
       res.status(200).json({
         message: result.message,
         finalCsvPath: result.finalCsvPath,
         data: result.data,
       });
-      
+  
     } catch (error) {
       console.error('Erreur lors du traitement des fichiers CSV :', error);
       res.status(500).json({ message: 'Erreur de traitement', error: error.message });
     }
   }
+  
+
 
   //  Nouvelle méthode pour récupérer les fichiers dans un dossier
   async getUploadedFiles(req, res) {

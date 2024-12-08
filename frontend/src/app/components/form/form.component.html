@@ -24,23 +24,6 @@
         </p>
       </div>
     </div> 
-  
-
-    <div *ngIf="addressArray.length > 1" class="flex justify-start">
-      <select 
-        placeholder="Type de jointure"
-        formControlName="typeJoin"
-        id="underline_select" 
-        class="text-center block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-        <option value="" disabled selected>Type jointure</option>
-        <option value="INNER">INNER JOIN</option>
-        <option value="LEFT">LEFT JOIN</option>
-        <option value="RIGHT">RIGHT JOIN</option>
-        <option value="FULL">FULL JOIN</option>
-        <option value="CROSS">CROSS JOIN</option>
-      </select>
-    </div>
-
   </div>
 
   <div class="space-y-4" *ngFor="let group of addressArray.controls; let i = index" formArrayName="address">
@@ -90,6 +73,29 @@
       </div>
     </div>
   </div>
+  
+  <div *ngIf="addressArray.length > 1" class="flex gap-x-8 justify-start bg-gray-50 p-6 rounded-lg shadow-md">
+    <select 
+      placeholder="Type de jointure"
+      formControlName="typeJoin"
+      id="underline_select" 
+      class="text-center block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+      <option value="" disabled selected>Type jointure</option>
+      <option value="INNER">INNER JOIN</option>
+      <option value="LEFT">LEFT JOIN</option>
+      <option value="RIGHT">RIGHT JOIN</option>
+      <option value="FULL">FULL JOIN</option>
+      <option value="CROSS">CROSS JOIN</option>
+    </select>
+
+      <!-- Champ Critère de filtre -->
+    <input
+      type="text"
+      class="mt-1 block w-full px-3 py-2 border rounded-md text-center"
+      placeholder="Critères de filtre (optionnel)"
+      formControlName="filterCriteria"
+    />
+  </div>
   <!-- Bouton pour ajouter une autre adresse -->
   <div class="mt-6 text-end">
     <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md" (click)="addAddress()">
@@ -110,5 +116,5 @@
 
 <!-- Affichage des valeurs du formulaire -->
 <!-- <h2 class="text-xl font-semibold mt-6">Valeurs du formulaire</h2>
-<pre class="bg-gray-100 p-4 rounded-md mt-2">{{ userForm.value | json }}</pre> -->
-
+<pre class="bg-gray-100 p-4 rounded-md mt-2">{{ userForm.value | json }}</pre> 
+ -->
