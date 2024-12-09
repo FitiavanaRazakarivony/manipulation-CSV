@@ -19,7 +19,7 @@ class FileUploadMiddleware {
   diskStorage() {
     return multer.diskStorage({
       destination: (req, file, cb) => {
-        const uploadDir = './uploads';
+        const uploadDir = '../uploads';
   
         // Vérifier si le dossier 'uploads' existe, sinon le créer
         if (!fs.existsSync(uploadDir)) {
