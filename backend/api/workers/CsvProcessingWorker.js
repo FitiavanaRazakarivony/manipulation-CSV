@@ -1,7 +1,7 @@
 const fs = require('fs');
 const fastcsv = require('fast-csv');
 const path = require('path');
-const { cleanData } = require('../utils/JoinUtils'); // Importation de cleanData
+const { cleanData, removeDuplicates } = require('../utils/JoinUtils'); // Importation de cleanData
 
 class CsvProcessingWorker {
   constructor(filePath, namefile) {
@@ -9,23 +9,16 @@ class CsvProcessingWorker {
     this.namefile = namefile;
   }
 
-  // Fonction pour supprimer les doublons
-  removeDuplicates(data) {
-    const seen = new Set();
-    return data.filter(item => {
-      const serializedItem = JSON.stringify(item); // Sérialiser pour comparaison
-      if (seen.has(serializedItem)) {
-        return false; // Ignorer les doublons 
-      }
-      seen.add(serializedItem);
-      return true;
-    });
-  }
-
   async process() {
     return new Promise((resolve, reject) => {
       const data = [];
       const outputDir = path.join(__dirname, '../../', 'output'); // Dossier où sauvegarder le fichier CSV généré
+
+      console.log('Chemin du fichier:', this.filePath);
+
+      if (!this.filePath) {
+        return reject(new Error('Chemin du fichier non défini.'));
+    }
 
       // Créer le dossier de sortie si il n'existe pas
       if (!fs.existsSync(outputDir)) {
@@ -54,12 +47,13 @@ class CsvProcessingWorker {
           const cleanedData = cleanData(data);
 
           // Étape 2 : Supprimer les doublons des données nettoyées
-          const deduplicatedData = this.removeDuplicates(cleanedData);
+          const deduplicatedData = removeDuplicates(cleanedData);
 
           // Générer le chemin du fichier CSV nettoyé
           const finalOutputPath = path.join(outputDir, `${this.namefile}-cleaned.csv`);
           const writeStream = fs.createWriteStream(finalOutputPath);
           const csvStream = fastcsv.format({ headers: true });
+          
 
           // Écrire les données nettoyées et dédupliquées dans le fichier CSV
           csvStream.pipe(writeStream)
