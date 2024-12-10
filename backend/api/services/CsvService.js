@@ -30,7 +30,7 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
 
     const results = await Promise.all(
       fileNameMapping.map(({ filePath, name }) =>
-        new CsvProcessingWorker(filePath, name).process()
+        new CsvProcessingWorker( name, filePath).process()
       )
     );
 
