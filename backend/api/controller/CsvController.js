@@ -140,6 +140,8 @@ class CsvController {
     let directory;
     if (type === 'upload') {
       directory = uploadDir;
+      console.log('chemin upload', uploadDir);
+    
     } else if (type === 'output') {
       directory = outputDir;
     } else {
