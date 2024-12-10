@@ -2,8 +2,8 @@ const CsvProcessingWorker = require('../../api/workers/CsvProcessingWorker');
 const { joinTables, removeDuplicates , cleanData, filterData} = require('../utils/JoinUtils');
 const path = require('path');
 const fs = require('fs');
-const appConfig = require('../../config/appConfig');
-const { log } = require('console');
+const os = require('os'); // Importation du module os
+// const appConfig = require('../../config/appConfig'); // Nous n'avons plus besoin de cela
 
 // Fonction pour traiter les fichiers
 async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteria) {
@@ -60,7 +60,8 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
         ? joinTables(results.map(() => filteredData), typeJoin)
         : filteredData;
 
-    const outputDir = path.join(__dirname, '../../', appConfig.outputDir);
+    // Utiliser os.tmpdir() pour définir le répertoire de sortie
+    const outputDir = path.join(os.tmpdir(), 'output'); // Utilisation du répertoire temporaire
 
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -95,8 +96,6 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
   }
 }
 
-
-
 // Fonction pour supprimer un fichier
 async function deleteFile(directory, fileName) {
   const filePath = path.join(directory, fileName);
@@ -121,4 +120,3 @@ module.exports = {
   processFiles,
   deleteFile,
 };
-
