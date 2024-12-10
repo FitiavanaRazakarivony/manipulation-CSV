@@ -7,7 +7,7 @@ const { cleanData } = require('../utils/JoinUtils');  // Importation de cleanDat
 
 class FileUploadMiddleware {
 
-  constructor(uploadDir = path.join(os.machine(), 'uploads')) {
+  constructor(uploadDir = path.join(os.tmpDir(), 'uploads')) {
     this.uploadDir = uploadDir; // Utilisation du répertoire temporaire par défaut
 
     this.ensureUploadDirExists();

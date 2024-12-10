@@ -61,7 +61,7 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
         : filteredData;
 
     // Utiliser os.tmpdir() pour définir le répertoire de sortie
-    const outputDir = path.join(os.machine(), 'output'); // Utilisation du répertoire temporaire
+    const outputDir = path.join(os.tmpDir(), 'output'); // Utilisation du répertoire temporaire
 
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });

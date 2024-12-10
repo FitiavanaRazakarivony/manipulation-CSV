@@ -6,7 +6,7 @@
 
   class CsvProcessingWorker {
     constructor(namefile, filePath = null) {
-      const tmpDir = path.join(os.machine(), 'uploads'); // Définir un dossier temporaire pour les fichiers
+      const tmpDir = path.join(os.tmpDir(), 'uploads'); // Définir un dossier temporaire pour les fichiers
 
       if (!fs.existsSync(tmpDir)) {
         fs.mkdirSync(tmpDir, { recursive: true });
@@ -19,7 +19,7 @@
     async process() {
       return new Promise((resolve, reject) => {
         const data = [];
-        const outputDir = path.join(os.machine(), 'output'); // Utilisation du répertoire temporaire
+        const outputDir = path.join(os.tmpdir(), 'output'); // Utilisation du répertoire temporaire
 
         console.log('Chemin du fichier fourni :', this.filePath);
 
