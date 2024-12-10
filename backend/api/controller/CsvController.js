@@ -133,8 +133,8 @@ class CsvController {
     const { type, fileName } = req.params;  // Récupère le type de dossier (upload/output) et le nom du fichier depuis les paramètres
 
     // Définir les chemins pour les deux dossiers
-    const uploadDir = path.join(__dirname, '../../', 'uploads');
-    const outputDir = path.join(__dirname, '../../', 'output');
+    const uploadDir = path.join(os.tmpdir(), 'uploads');
+    const outputDir = path.join(os.tmpdir(), 'output');
 
     // Déterminer le dossier à partir du type
     let directory;
