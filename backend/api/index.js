@@ -34,7 +34,7 @@ if (!fs.existsSync(tmpDir)) {
 }
 
 const tmpDirOutput = path.join(os.tmpdir(), 'output');
-if (!fs.existsSync(tmpDir)) {
+if (!fs.existsSync(tmpDirOutput)) {
   fs.mkdirSync(tmpDirOutput, { recursive: true });
 }
 
@@ -45,3 +45,4 @@ app.listen(PORT, () => {
 
 console.log("again");
 console.log("saer");
+

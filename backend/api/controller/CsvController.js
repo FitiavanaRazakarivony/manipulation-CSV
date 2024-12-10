@@ -58,8 +58,6 @@ class CsvController {
     }
   }
   
-
-
   //  Nouvelle méthode pour récupérer les fichiers dans un dossier
   async getUploadedFiles(req, res) {
     const { type } = req.query; // Récupère le type de dossier ("upload" ou "output")
