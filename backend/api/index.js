@@ -33,6 +33,11 @@ if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir, { recursive: true });
 }
 
+const tmpDirOutput = path.join(os.tmpdir(), 'output');
+if (!fs.existsSync(tmpDir)) {
+  fs.mkdirSync(tmpDirOutput, { recursive: true });
+}
+
 const PORT = process.env.PORT || 9002;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
