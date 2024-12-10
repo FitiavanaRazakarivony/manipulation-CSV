@@ -6,13 +6,13 @@
 
   class CsvProcessingWorker {
     constructor(namefile, filePath = null) {
-      const tmpDir = path.join(os.tmpDir(), 'uploads'); // Définir un dossier temporaire pour les fichiers
+      const tmpDir = path.join(os.tmpdir(), 'uploads'); // Définir un dossier temporaire pour les fichiers
 
       if (!fs.existsSync(tmpDir)) {
         fs.mkdirSync(tmpDir, { recursive: true });
       }
 
-      this.filePath = filePath || path.join(tmpDir, `${namefile}.csv`);
+      this.filePath = filePath || path.join(os.tmpdir(), `${namefile}.csv`);
       this.namefile = namefile;
     }
 

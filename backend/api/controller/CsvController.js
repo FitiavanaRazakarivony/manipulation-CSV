@@ -2,6 +2,7 @@ const CsvService = require('../services/CsvService');
 const { joinTables } = require('../utils/JoinUtils');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 // Contrôleur pour gérer l'upload et le traitement des fichiers CSV
 class CsvController {
@@ -58,13 +59,15 @@ class CsvController {
     }
   }
   
+
+
   //  Nouvelle méthode pour récupérer les fichiers dans un dossier
   async getUploadedFiles(req, res) {
     const { type } = req.query; // Récupère le type de dossier ("upload" ou "output")
   
     // Définir les chemins pour les deux dossiers
-    const uploadDir = path.join(__dirname, '../../', 'uploads');
-    const outputDir = path.join(__dirname, '../../', 'output');
+    const uploadDir = path.join(os.tmpdir(), 'uploads');
+    const outputDir = path.join(os.tmpdir(), 'output');
   
     try {
       // Fonction pour lister les fichiers d'un dossier
