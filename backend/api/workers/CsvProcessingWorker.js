@@ -1,103 +1,87 @@
 const fs = require('fs');
 const fastcsv = require('fast-csv');
 const path = require('path');
-const os = require('os'); // Importation du module os
+const os = require('os');
 const { cleanData, removeDuplicates } = require('../utils/JoinUtils'); // Importation de cleanData
 
 class CsvProcessingWorker {
   constructor(namefile, filePath = null) {
     const tmpDir = path.join(os.tmpdir(), 'uploads'); // Définir un dossier temporaire pour les fichiers
 
-    // Assurez-vous que le répertoire temporaire existe
     if (!fs.existsSync(tmpDir)) {
       fs.mkdirSync(tmpDir, { recursive: true });
     }
 
-    this.filePath = filePath || path.join(tmpDir, `${namefile}.csv`); // Chemin par défaut si non fourni
+    this.filePath = filePath || path.join(tmpDir, `${namefile}.csv`);
     this.namefile = namefile;
   }
 
   async process() {
     return new Promise((resolve, reject) => {
       const data = [];
-      const outputDir = path.join(os.tmpdir(), 'output'); // Dossier temporaire pour le fichier nettoyé
+      const outputDir = path.join(os.tmpdir(), 'output'); // Utilisation du répertoire temporaire
 
-      console.log('Chemin du fichier:', this.filePath);
+      console.log('Chemin du fichier fourni :', this.filePath);
 
-      if (!this.filePath) {
-        return reject(new Error('Chemin du fichier non défini.'));
+      if (!this.filePath || !fs.existsSync(this.filePath)) {
+        return reject(new Error(`Fichier introuvable : ${this.filePath}`));
       }
 
-      // Créer le dossier de sortie s'il n'existe pas
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+      // Vérifier et créer le dossier de sortie si nécessaire
+      try {
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+      } catch (err) {
+        console.error(`Erreur lors de la création du répertoire ${outputDir}:`, err);
+        return reject(new Error(`Impossible de créer le répertoire de sortie: ${err.message}`));
       }
 
-      // Créer un flux de lecture pour analyser le CSV
-      fs.createReadStream(this.filePath)
-        // Enlever les caractères BOM (Byte Order Mark) invisibles au début du fichier
-        .pipe(
-          new require('stream').Transform({
-            transform(chunk, encoding, callback) {
-              this.push(chunk.toString().replace(/^\uFEFF/, '')); // Enlever le BOM
-              callback();
-            },
-          })
-        )
+      const readStream = fs.createReadStream(this.filePath);
+
+      readStream.on('error', (err) => {
+        return reject(new Error(`Erreur lors de la lecture du fichier : ${err.message}`));
+      });
+
+      readStream
         .pipe(
           fastcsv.parse({
             headers: true,
             skipEmpty: true,
-            delimiter: ';', // Délimiteur ici, ajustez à ';' selon votre format
+            delimiter: ';',
           })
         )
         .on('data', (row) => {
-          data.push(row); // Ajouter chaque ligne traitée dans 'data'
+          data.push(row);
         })
         .on('end', () => {
-          // Étape 1 : Nettoyer les données avec cleanData
-          const cleanedData = cleanData(data);
+          try {
+            const cleanedData = cleanData(data);
+            const deduplicatedData = removeDuplicates(cleanedData);
 
-          // Étape 2 : Supprimer les doublons des données nettoyées
-          const deduplicatedData = removeDuplicates(cleanedData);
+            const finalOutputPath = path.join(outputDir, `${this.namefile}-cleaned.csv`);
+            const writeStream = fs.createWriteStream(finalOutputPath);
+            const csvStream = fastcsv.format({ headers: true });
 
-          // Générer le chemin du fichier CSV nettoyé
-          const finalOutputPath = path.join(outputDir, `${this.namefile}-cleaned.csv`);
-          const writeStream = fs.createWriteStream(finalOutputPath);
-          const csvStream = fastcsv.format({ headers: true });
+            csvStream
+              .pipe(writeStream)
+              .on('finish', () => {
+                resolve({
+                  data: deduplicatedData,
+                  csvPath: finalOutputPath,
+                });
+              })
+              .on('error', (err) => reject(err));
 
-          // Écrire les données nettoyées et dédupliquées dans le fichier CSV
-          csvStream
-            .pipe(writeStream)
-            .on('finish', () => {
-              resolve({
-                data: deduplicatedData,
-                csvPath: finalOutputPath,
-              });
-            })
-            .on('error', (err) => reject(err));
-
-          deduplicatedData.forEach((row) => csvStream.write(row));
-          csvStream.end();
+            deduplicatedData.forEach((row) => csvStream.write(row));
+            csvStream.end();
+          } catch (error) {
+            reject(error);
+          }
         })
-        .on('error', (err) => reject(err)); // Gestion des erreurs
+        .on('error', (err) => reject(err));
     });
   }
-
-  
 }
 
 module.exports = CsvProcessingWorker;
-
-// // Exemple d'utilisation
-// const filePath = path.join(os.tmpdir(), 'uploads', 'example.csv');
-// fs.writeFileSync(filePath, 'id;name\n1;Alice\n2;Bob\n'); // Création d'un exemple de fichier CSV temporaire
-
-// const worker = new CsvProcessingWorker('example');
-// worker
-//   .process()
-//   .then(({ data, csvPath }) => {
-//     console.log('Données traitées :', data);
-//     console.log('Chemin du fichier CSV nettoyé :', csvPath);
-//   })
-//   .catch((err) => console.error('Erreur lors du traitement du CSV :', err));
