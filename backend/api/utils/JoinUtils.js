@@ -13,7 +13,14 @@ const joinTables = (tablesData, joinType) => {
     throw new Error("Au moins deux tables sont nécessaires pour effectuer une jointure.");
   }
 
-  const getJoinKey = (table) => Object.keys(table[0])[0];
+  // const getJoinKey = (table) => Object.keys(table[0])[0];
+
+  const getJoinKey = (table) => {
+    if (!table || table.length === 0 || !table[0]) {
+      throw new Error("Table invalide ou vide.");
+    }
+    return Object.keys(table[0])[0];
+  };
 
   const performJoin = (baseTable, joinTable, baseKey, joinKey) => {
     switch (joinType.toUpperCase()) {
@@ -84,10 +91,26 @@ function cleanData(data) {
 
 // Filtrage des données
 function filterData(data, criteria) {
+  let filterCriteria;
+  
+  // Si `criteria` est déjà un objet, l'utiliser directement
+  if (typeof criteria === 'object') {
+    filterCriteria = criteria;
+  } else {
+    // Sinon, essayer de parser la chaîne JSON
+    try {
+      filterCriteria = JSON.parse(criteria);
+    } catch (e) {
+      throw new Error(`Erreur de parsing du critère de filtrage: ${e.message}`);
+    }
+  }
+
   return data.filter((row) =>
-    Object.keys(criteria).every((key) => String(row[key]).includes(criteria[key]))
+    Object.keys(filterCriteria).every((key) => String(row[key]).includes(filterCriteria[key]))
   );
 }
+
+
 
 // Trier les données
 function sortData(data, key, order = 'asc') {
@@ -116,6 +139,3 @@ module.exports = {
   joinTables,
   removeDuplicates
 };
-
-
-

@@ -12,6 +12,7 @@ async function processFiles(files, namefile, nameOutPut, typeJoin, filterCriteri
     if (!Array.isArray(files)) {
       files = [files];
     }
+
     if (!Array.isArray(namefile)) {
       namefile = [namefile];
     }
