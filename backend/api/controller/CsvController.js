@@ -46,6 +46,7 @@ class CsvController {
       // Appeler le service CSV
       const result = await CsvService.processFiles(files, namefile, nameOutPut, typeJoin, filter);
   
+      console.log('eeeee', result);
       // Retourner le chemin du fichier CSV final
       res.status(200).json({
         message: result.message,
