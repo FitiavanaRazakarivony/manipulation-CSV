@@ -1,3 +1,5 @@
+// CsvProcessingWorker.js
+
 const fs = require('fs');
 const fastcsv = require('fast-csv');
 const path = require('path');
@@ -5,49 +7,52 @@ const os = require('os');
 const { cleanData, removeDuplicates } = require('../utils/JoinUtils'); // Importation de cleanData
 
 class CsvProcessingWorker {
-  constructor(namefile, filePath = null) {
-    const tmpDir = path.join(os.tmpdir(), 'uploads'); // Définir un dossier temporaire pour les fichiers
+  constructor(filePath) {
+    this.filePath = filePath;
+  }
 
-    if (!fs.existsSync(tmpDir)) {
-      fs.mkdirSync(tmpDir, { recursive: true });
-    }
+  async getHeaders() {
+    return new Promise((resolve, reject) => {
+      const readStream = fs.createReadStream(this.filePath);
+      let firstLine = '';
 
-    this.filePath = filePath || path.join(os.tmpdir(), `${namefile}.csv`);
-    this.namefile = namefile;
+      readStream.on('data', (chunk) => {
+        firstLine += chunk.toString();
+        if (firstLine.includes('\n')) {
+          readStream.destroy();
+          const delimiter = firstLine.includes(';') ? ';' : ',';
+          const headers = firstLine.split('\n')[0].split(delimiter).map((header) => header.trim());
+          resolve(headers);
+        }
+      });
+
+      readStream.on('error', (err) => {
+        return reject(new Error(`Erreur lors de la lecture du fichier : ${err.message}`));
+      });
+    });
   }
 
   async process() {
     return new Promise((resolve, reject) => {
       const data = [];
-      const outputDir = path.join(os.tmpdir(), 'output'); // Utilisation du répertoire temporaire
-
-      console.log('Chemin du fichier fourni :', this.filePath);
+      const outputDir = path.join(os.tmpdir(), 'output');
 
       if (!this.filePath || !fs.existsSync(this.filePath)) {
         return reject(new Error(`Fichier introuvable : ${this.filePath}`));
       }
 
       // Vérifier et créer le dossier de sortie si nécessaire
-      try {
-        if (!fs.existsSync(outputDir)) {
-          fs.mkdirSync(outputDir, { recursive: true });
-        }
-      } catch (err) {
-        console.error(`Erreur lors de la création du répertoire ${outputDir}:`, err);
-        return reject(new Error(`Impossible de créer le répertoire de sortie: ${err.message}`));
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
       }
 
       const readStream = fs.createReadStream(this.filePath);
       let firstLine = '';
-      
-      // Lire les premières lignes pour détecter le délimiteur
+
       readStream.on('data', (chunk) => {
         firstLine += chunk.toString();
         if (firstLine.includes('\n')) {
-          // Une fois la première ligne lue, déterminer le délimiteur
           const delimiter = firstLine.includes(';') ? ';' : ',';
-
-          // Réinitialiser le readStream pour commencer le parsing avec fastcsv
           readStream.destroy();
           this._processFile(delimiter, resolve, reject, data, outputDir);
         }
@@ -59,7 +64,6 @@ class CsvProcessingWorker {
     });
   }
 
-  // Méthode pour traiter le fichier après avoir détecté le délimiteur
   async _processFile(delimiter, resolve, reject, data, outputDir) {
     const readStream = fs.createReadStream(this.filePath);
     readStream
@@ -78,22 +82,7 @@ class CsvProcessingWorker {
           const cleanedData = cleanData(data);
           const deduplicatedData = removeDuplicates(cleanedData);
 
-          const finalOutputPath = path.join(outputDir, `${this.namefile}-cleaned.csv`);
-          const writeStream = fs.createWriteStream(finalOutputPath);
-          const csvStream = fastcsv.format({ headers: true });
-
-          csvStream
-            .pipe(writeStream)
-            .on('finish', () => {
-              resolve({
-                data: deduplicatedData,
-                csvPath: finalOutputPath,
-              });
-            })
-            .on('error', (err) => reject(err));
-
-          deduplicatedData.forEach((row) => csvStream.write(row));
-          csvStream.end();
+          resolve({ data: deduplicatedData });
         } catch (error) {
           reject(error);
         }
@@ -103,5 +92,3 @@ class CsvProcessingWorker {
 }
 
 module.exports = CsvProcessingWorker;
-
-

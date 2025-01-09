@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { CsvUploadService } from '../../services/csv/file-upload.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -13,6 +13,9 @@ export class FormComponent {
   public userForm: FormGroup;
   file: File | null = null;
   downloadLink: string | null = null;
+  headers: string[] = [];  // Stocker les entêtes du fichier CSV
+  allHeaders: Set<string> = new Set();  // Utiliser un Set pour éviter les doublons
+  showHeaderOptions = false; // Contrôle l'affichage du bloc
 
   constructor(
     private _fb: FormBuilder,
@@ -36,19 +39,16 @@ export class FormComponent {
     });
   }
 
+  // Méthode pour basculer l'affichage des entêtes et du critère de filtre
+  toggleHeaderOptions(): void {
+    this.showHeaderOptions = !this.showHeaderOptions;
+  }
+
   // Ajouter un nouveau groupe dans FormArray
   private addAddressGroup(): FormGroup {
     return this._fb.group({
-      namefile: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(30),
-          Validators.pattern(/^(?!.*\d)(?!.*<\?php)(?!.*@)(?!.*%)[a-zA-ZÀ-ÿ]+([ '-][a-zA-ZÀ-ÿ]+)*$/),
-        ],
-      ],
       file: [null, Validators.required],
+      headerFile: [''], // Ajouter un contrôle pour l'entête sélectionné
     });
   }
 
@@ -79,9 +79,45 @@ export class FormComponent {
 
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      this.file = file;
-      this.addressArray.controls[index].get('file')?.setValue(file);
+      const fileControl = this.addressArray.at(index)?.get('file');
+      if (fileControl) {
+        fileControl.setValue(file); // Associe le fichier au contrôle
+        console.log(`Fichier ajouté au contrôle ${index}:`, file.name);
+      } else {
+        console.warn(`Contrôle non trouvé à l'index ${index}`);
+      }
+    } else {
+      console.warn('Aucun fichier sélectionné.');
     }
+  }
+
+
+  // Méthode pour extraire les en-têtes du CSV
+  private extractCsvHeaders(csvContent: string): string[] {
+    // Diviser le contenu du CSV en lignes
+    const lines = csvContent.split('\n');
+
+    // Vérifier si le fichier contient au moins une ligne
+    if (lines.length > 0) {
+      // Analyser la première ligne pour détecter le séparateur
+      const firstLine = lines[0].trim();
+
+      // Détecter le séparateur en fonction de la présence de ; ou ,
+      let separator = ',';
+      if (firstLine.indexOf(';') > -1) {
+        separator = ';'; // Si le séparateur est un point-virgule
+      }
+
+      // Extraire les en-têtes en fonction du séparateur détecté
+      const headers = firstLine
+        .split(separator)  // Utiliser le séparateur détecté
+        .map(header => header.trim().replace(/(^"|"$)/g, '')); // Supprimer les guillemets autour des valeurs
+
+      // Filtrer les en-têtes vides
+      return headers.filter(header => header.length > 0);
+    }
+
+    return [];
   }
 
   // Soumettre le formulaire
@@ -103,14 +139,12 @@ export class FormComponent {
       formData.append('filterCriteria', filterCriteria);
     }
 
-    // Ajout des fichiers et noms associés
-    this.addressArray.controls.forEach((control, index) => {
+    // Ajout des fichiers
+    this.addressArray.controls.forEach((control) => {
       const file = control.get('file')?.value;
-      const namefile = control.get('namefile')?.value;
 
-      if (file && namefile) {
+      if (file) {
         formData.append('file', file, file.name); // Ajout des fichiers
-        formData.append(`namefile[${index}]`, namefile); // Ajout des noms de fichiers
       }
     });
 

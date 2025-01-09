@@ -1,5 +1,5 @@
+<!-- HTML Template -->
 <form class="space-y-5" [formGroup]="userForm" (ngSubmit)="uploadFile()">
-
   <div class="flex gap-x-8 bg-gray-50 p-6 rounded-lg shadow-md text-end grid grid-flow-col justify-stretch">
     <div>
       <input
@@ -23,33 +23,13 @@
           Le nom de sortie ne doit contenir que des lettres, des espaces ou des tirets.
         </p>
       </div>
-    </div> 
+    </div>
   </div>
 
   <div class="space-y-4" *ngFor="let group of addressArray.controls; let i = index" formArrayName="address">
     <div class="bg-gray-50 p-6 rounded-lg shadow-md text-end" [formGroupName]="i">
       <div class="flex gap-x-8 justify-center">
-        <!-- Champ Nom -->
-        <div>
-          <input
-            type="text"
-            class="mt-1 block w-full px-3 py-2 border rounded-md w-full text-center" 
-            placeholder="Enter your name"
-            formControlName="namefile"
-            [ngClass]="{ 'border-red-500': group.get('namefile')?.invalid && (group.get('namefile')?.dirty || group.get('namefile')?.touched) }"
-          />
-          <div *ngIf="group.get('namefile')?.invalid && (group.get('namefile')?.dirty || group.get('namefile')?.touched)">
-            <p *ngIf="group.get('namefile')?.errors?.['required']" class="text-red-600 text-sm mt-1">Le nom est requis.</p>
-            <p *ngIf="group.get('namefile')?.errors?.['minlength']" class="text-red-600 text-sm mt-1">Le nom doit contenir au moins 3 caractères.</p>
-            <p *ngIf="group.get('namefile')?.errors?.['maxlength']" class="text-red-600 text-sm mt-1">Le nom doit contenir au plus 30 caractères.</p>
-            <p *ngIf="group.get('namefile')?.errors?.['pattern']" class="text-red-600 text-sm mt-1">
-              Le nom ne doit contenir que des lettres, <br> des espaces ou des tirets (ex. : Mon fichier).
-            </p>
-          </div>
-        </div>
-        
-        <!-- Champ Fichier -->     
-                
+        <!-- Champ Fichier -->
         <div>
           <input
             class="mt-1 block w-full px-3 py-2 border rounded-md w-96"
@@ -73,29 +53,55 @@
       </div>
     </div>
   </div>
-  
-  <div *ngIf="addressArray.length > 1" class="flex gap-x-8 justify-start bg-gray-50 p-6 rounded-lg shadow-md">
-    <select 
-      placeholder="Type de jointure"
-      formControlName="typeJoin"
-      id="underline_select" 
-      class="text-center block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-      <option value="" disabled selected>Type jointure</option>
-      <option value="INNER">INNER JOIN</option>
-      <option value="LEFT">LEFT JOIN</option>
-      <option value="RIGHT">RIGHT JOIN</option>
-      <option value="FULL">FULL JOIN</option>
-      <option value="CROSS">CROSS JOIN</option>
-    </select>
 
-      <!-- Champ Critère de filtre -->
-    <input
-      type="text"
-      class="mt-1 block w-full px-3 py-2 border rounded-md text-center"
-      placeholder="Critères de filtre (optionnel)"
-      formControlName="filterCriteria"
-    />
+  <div *ngIf="addressArray.length > 1" class="bg-gray-50 p-6 rounded-lg shadow-md">
+    <div>
+      <select 
+        formControlName="typeJoin"
+        class="text-center block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+        <option value="" disabled selected>Type jointure</option>
+        <option value="INNER">INNER JOIN</option>
+        <option value="LEFT">LEFT JOIN</option>
+        <option value="RIGHT">RIGHT JOIN</option>
+        <option value="FULL">FULL JOIN</option>
+        <option value="CROSS">CROSS JOIN</option>
+      </select>
+    </div>
+        
   </div>
+
+  <!-- Conteneur pour le bouton et le bloc de filtrage, aligné à droite -->
+<div class="flex justify-end mt-5">
+  <!-- Bouton pour afficher/masquer les entêtes et le critère de filtre -->
+  <button 
+    type="button" 
+    class="bg-yellow-500 text-white px-4 py-2 rounded-md" 
+    (click)="toggleHeaderOptions()">
+    <span class="material-symbols-outlined">
+      visibility
+    </span>
+    Filtrer les données
+  </button>
+</div>
+
+<!-- Bloc conditionnellement affiché si 'showHeaderOptions' est true, aligné à droite -->
+<div *ngIf="showHeaderOptions" class="flex justify-end gap-4 mt-4">
+  <!-- Select pour afficher les entêtes -->
+  <select 
+    formControlName="headerFile"
+    class="text-center block py-2.5 px-0 w-96 text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+    <option value="" disabled selected>Choisir une entête</option>
+    <option *ngFor="let header of headers" [value]="header">{{ header }}</option>
+  </select>
+
+  <!-- Champ Critère de filtre -->
+  <input
+    type="text"
+    class="mt-1 block w-96 px-3 py-2 border rounded-md text-center"
+    placeholder="Critères de filtre (optionnel)"
+    formControlName="filterCriteria"
+  />
+</div>
   <!-- Bouton pour ajouter une autre adresse -->
   <div class="mt-6 text-end">
     <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md" (click)="addAddress()">
@@ -105,16 +111,13 @@
     </button>
   </div>
 
+  <!-- prend tous l'entête de cette fichier -->
   <!-- Bouton de soumission -->
   <div class="mt-4 text-center">
     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md" [disabled]="userForm.invalid">
       Soumettre
     </button>
   </div>
-  
+
 </form>
 
-<!-- Affichage des valeurs du formulaire -->
-<!-- <h2 class="text-xl font-semibold mt-6">Valeurs du formulaire</h2>
-<pre class="bg-gray-100 p-4 rounded-md mt-2">{{ userForm.value | json }}</pre> 
- -->

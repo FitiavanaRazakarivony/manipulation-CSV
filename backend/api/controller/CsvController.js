@@ -9,51 +9,42 @@ class CsvController {
 
   async handleCsvUpload(req, res) {
     try {
-      const { namefile, nameOutPut, typeJoin, filterCriteria } = req.body;
-    const files = Array.isArray(req.files) ? req.files : [req.files];  // Gestion des fichiers envoyés en tant qu'objet ou tableau  
+      const { nameOutPut, typeJoin, filterCriteria } = req.body;
+      const files = Array.isArray(req.files) ? req.files : [req.files];  // Gestion des fichiers envoyés en tant qu'objet ou tableau
   
+      console.log('Body reçu :', req.body);
+      console.log('Fichiers reçus :', req.files);
+            
       // Validation : vérifier les fichiers et les champs requis
       if (!files || files.length === 0) {
         return res.status(400).json({ message: 'Aucun fichier uploadé.' });
       }
   
-      // Condition : si un seul fichier est uploadé, on ne valide pas typeJoin et filterCriteria
-      if (files.length === 1) {
-        // Si un seul fichier, ces champs ne sont pas nécessaires
-        if (!nameOutPut || !namefile) {
-          return res.status(400).json({ 
-            message: 'Les champs nameOutPut et namefile sont obligatoires pour un fichier unique.',
-            received: { nameOutPut, namefile }
-          });
-        }
-      } else {
-        // Si plusieurs fichiers, ces champs sont obligatoires et filterCriteria doit être non vide
-        if (!nameOutPut || !typeJoin ) {
-          return res.status(400).json({ 
-            message: 'Les champs nameOutPut, typeJoin et filterCriteria sont obligatoires pour plusieurs fichiers.',
-            received: { nameOutPut, typeJoin },
-          });
-        }
+      // Vérification des champs requis
+      if (files.length > 1 && (!nameOutPut || !typeJoin)) {
+        return res.status(400).json({ 
+          message: 'Les champs nameOutPut et typeJoin sont obligatoires pour plusieurs fichiers.',
+          received: { nameOutPut, typeJoin },
+        });
       }
-  
+
       // Logs pour débogage
       console.log('Fichiers reçus:', files);
-      console.log('Champs reçus:', { namefile, nameOutPut, typeJoin, filterCriteria });
-  
+      console.log('Champs reçus:', { nameOutPut, typeJoin, filterCriteria });
+
       // Définir un critère de filtrage par défaut si absent
       const filter = filterCriteria && filterCriteria.trim() !== '' ? JSON.parse(filterCriteria) : {};
-  
+
       // Appeler le service CSV
-      const result = await CsvService.processFiles(files, namefile, nameOutPut, typeJoin, filter);
-  
-      console.log('eeeee', result);
+      const result = await CsvService.processFiles(files, nameOutPut, typeJoin, filter);
+
       // Retourner le chemin du fichier CSV final
       res.status(200).json({
         message: result.message,
         finalCsvPath: result.finalCsvPath,
         data: result.data,
       });
-  
+
     } catch (error) {
       console.error('Erreur lors du traitement des fichiers CSV :', error);
       res.status(500).json({ message: 'Erreur de traitement', error: error.message });
@@ -164,7 +155,7 @@ class CsvController {
         return res.status(500).json({ message: 'Erreur lors du téléchargement.' });
       }
     });
-  }
+  } 
 
   // Nouvelle méthode pour supprimer un fichier
   async deleteFile(req, res) {
